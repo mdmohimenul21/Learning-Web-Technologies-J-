@@ -1,0 +1,27 @@
+<employee>
+ 
+ <person no="1">
+ <id>1<id>
+ <name>John Doe</name>
+ <address>H_38_R_lat# A/1, H# 20, R#18, Mirpur, Dhaka3_Banani_Dhaka</address>
+ <dept>sales</dept>
+ <sal>$20000</sal>
+ </person>
+
+  <person no-"2">
+ <id>2<id>
+ <name>Mark Zuckarburg</name>
+ <address>Flat_A_1_H_20_R_18_Mirpur_Dhaka</address>
+ <dept>accounts</dept>
+ <sal>$1200000</sal>
+ </person>
+
+  <person no-"3">
+ <id>3<id>
+ <name>Ala Voski</name>
+ <address>H_38_R_3_Motijheel</address>
+ <dept>Human Resources</dept>
+ <sal>$30000</sal>
+ </person>
+
+</employee>
