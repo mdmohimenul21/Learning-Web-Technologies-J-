@@ -1,0 +1,29 @@
+<products>
+
+<product id="1">
+<id>11-11-11</id>
+<name>Samsung</name>
+<unit>35500</unit>
+<stock>50</stock>
+<status>1</status>
+</product>
+
+<product id="2">
+<id>11-11-12</id>
+<name>HTC</name>
+<unit>65000</unit>
+<stock>35</stock>
+<status>0</status>
+</product>
+
+<product id="3">
+<id>11-11-13</id>
+<name>Nokia</name>
+<unit>25100</unit>
+<stock>10</stock>
+<status>1</status>
+</product>
+
+
+
+</products>
