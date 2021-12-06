@@ -1,0 +1,454 @@
+index.html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home</title>
+  </head>
+  <body>
+    <fieldset>
+        <a href="index.html">Home</a> | <a href="about.html">About</a> |
+        <a href="register.html">Sign Up</a> | <a href="login.html">Login</a>
+    </fieldset>
+    <center>
+    </br></br></br></br>
+      <h1>Welcome to Supply Chain Management System</h1>
+    </br></br></br></br>
+    </center>
+  </body>
+</html>
+
+-------login.html...........
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+  </head>
+  <body>
+    <fieldset>
+      <a href="index.html">Home</a> | <a href="about.html">About</a> |
+      <a href="register.html">Sign Up</a> | <a href="login.html">Login</a>
+    </fieldset>
+    <center>
+      <legend><h1>SCM-Login</h1></legend>
+      <form action="login.php" method="post">
+        <table>
+          <tr>
+            <td>Login as:</td>
+            <td>
+              <select name="type">
+                <option value="producer" default>Producer</option>
+                <option value="supplier">Supplier</option>
+                <option value="customer">Customer</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td>Username:</td>
+            <td><input type="text" required name="username" value="" /></td>
+          </tr>
+          <tr>
+            <td>Password:</td>
+            <td><input type="password" required name="password" value="" /></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td><input type="submit" name="submit" value="Login" /></td>
+          </tr>
+        </table>
+      </form>
+    </center>
+  </body>
+</html>
+
+
+login.php
+
+<?php
+session_start();
+if (isset($_POST['submit'])) {
+    $type = $_POST['type'];
+    if ($type == "producer") {
+        $username = $_POST['username'];
+        $password = $_POST['password'];
+        $myfile = fopen('user.txt', 'r');
+        while (!feof($myfile)) {
+            $data = fgets($myfile);
+            $user = explode('|', $data);
+            if (trim($user[0]) == $username && trim($user[1]) == $password) {
+                $_SESSION["user"] = $username;
+                $_SESSION["type"] = $type;
+                header('location: producer.php');
+            }
+        }
+        die("invalid username/password");
+    } else {
+        die("Invalid Type! No user found");
+    }
+}
+-----------product.php.........
+<?php
+session_start();
+if ($_SESSION['type'] != "producer" || !isset($_SESSION['user'])) {
+  header('location: login.html');
+}
+if (isset($_POST['addSupplier'])) {
+  $myfile = fopen('supplier.txt', 'a');
+  $user = $_POST['supplier'] . "\r\n";
+  fwrite($myfile, $user);
+  fclose($myfile);
+  unset($_POST['addSupplier']);
+}
+if (isset($_POST['delSupplier'])) {
+  $myfile = fopen('supplier.txt', 'r');
+  $out = array();
+  while (!feof($myfile)) {
+    $data = fgets($myfile);
+    if (trim($data) != $_POST['supplier']) {
+      $out[] = $data;
+    }
+  }
+  $fp = fopen("supplier.txt", "w+");
+  flock($fp, LOCK_EX);
+  foreach ($out as $line) {
+    fwrite($fp, $line);
+  }
+  flock($fp, LOCK_UN);
+  fclose($fp);
+  unset($_POST['delSupplier']);
+}
+if (isset($_POST['addCustomer'])) {
+  $myfile = fopen('customer.txt', 'a');
+  $user = $_POST['customer'] . "\r\n";
+  fwrite($myfile, $user);
+  fclose($myfile);
+  unset($_POST['addCustomer']);
+}
+if (isset($_POST['delCustomer'])) {
+  $myfile = fopen('customer.txt', 'r');
+  $out = array();
+  while (!feof($myfile)) {
+    $data = fgets($myfile);
+    if (trim($data) != $_POST['customer']) {
+      $out[] = $data;
+    }
+  }
+  $fp = fopen("customer.txt", "w+");
+  flock($fp, LOCK_EX);
+  foreach ($out as $line) {
+    fwrite($fp, $line);
+  }
+  flock($fp, LOCK_UN);
+  fclose($fp);
+  unset($_POST['delCustomer']);
+}
+if (isset($_POST['addMaterial'])) {
+  $myfile = fopen('material.txt', 'a');
+  $user = $_POST['material'] . "\r\n";
+  fwrite($myfile, $user);
+  fclose($myfile);
+  unset($_POST['addMaterial']);
+}
+if (isset($_POST['delMaterial'])) {
+  $myfile = fopen('material.txt', 'r');
+  $out = array();
+  while (!feof($myfile)) {
+    $data = fgets($myfile);
+    if (trim($data) != $_POST['material']) {
+      $out[] = $data;
+    }
+  }
+  $fp = fopen("material.txt", "w+");
+  flock($fp, LOCK_EX);
+  foreach ($out as $line) {
+    fwrite($fp, $line);
+  }
+  flock($fp, LOCK_UN);
+  fclose($fp);
+  unset($_POST['delMaterial']);
+}
+if (isset($_POST['addEmployee'])) {
+  $myfile = fopen('employee.txt', 'a');
+  $user = $_POST['employee'] . "\r\n";
+  fwrite($myfile, $user);
+  fclose($myfile);
+  unset($_POST['addEmployee']);
+}
+if (isset($_POST['delEmploee'])) {
+  $myfile = fopen('employee.txt', 'r');
+  $out = array();
+  while (!feof($myfile)) {
+    $data = fgets($myfile);
+    if (trim($data) != $_POST['employee']) {
+      $out[] = $data;
+    }
+  }
+  $fp = fopen("employee.txt", "w+");
+  flock($fp, LOCK_EX);
+  foreach ($out as $line) {
+    fwrite($fp, $line);
+  }
+  flock($fp, LOCK_UN);
+  fclose($fp);
+  unset($_POST['delEmployee']);
+}
+
+if (isset($_POST['addProduct'])) {
+  $myfile = fopen('product.txt', 'a');
+  $user = $_POST['product'] . "\r\n";
+  fwrite($myfile, $user);
+  fclose($myfile);
+  unset($_POST['addProduct']);
+}
+if (isset($_POST['delProduct'])) {
+  $myfile = fopen('product.txt', 'r');
+  $out = array();
+  while (!feof($myfile)) {
+    $data = fgets($myfile);
+    if (trim($data) != $_POST['product']) {
+      $out[] = $data;
+    }
+  }
+  $fp = fopen("product.txt", "w+");
+  flock($fp, LOCK_EX);
+  foreach ($out as $line) {
+    fwrite($fp, $line);
+  }
+  flock($fp, LOCK_UN);
+  fclose($fp);
+  unset($_POST['delProduct']);
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Producer</title>
+</head>
+
+<body>
+  <fieldset>
+    <a href="index.html">Home</a> | <a href="about.html">About</a> | <a href="logout.php">Logout</a>
+  </fieldset>
+  <center>
+    <h1>Producer</h1>
+    <form action="producer.php" method="post">
+      <input type="text" name="supplier" placeholder="Supplier to add/delete" />
+      <input type="submit" name="addSupplier" value="Add" />
+      <input type="submit" name="delSupplier" value="Delete" />
+    </form>
+    </br>
+    <form action="producer.php" method="POST">
+      <input type="text" name="customer" placeholder="Customer Request to add/delete" />
+      <input type="submit" name="addCustomer" value="Add" />
+      <input type="submit" name="delCustomer" value="Delete" />
+    </form>
+    </br>
+    <form action="producer.php" method="POST">
+      <input type="text" name="material" placeholder="Material Request to add/delete" />
+      <input type="submit" name="addMaterial" value="Add" />
+      <input type="submit" name="delMaterial" value="Delete" />
+    </form>
+    </br>
+    <form action="producer.php" method="POST">
+      <input type="text" name="employee" placeholder="Employee Request to add/delete" />
+      <input type="submit" name="addEmployee" value="Add" />
+      <input type="submit" name="delEmployrr" value="Delete" />
+    </form>
+    </br>
+    <form action="producer.php" method="POST">
+      <input type="text" name="product" placeholder="Product Request to add/delete" />
+      <input type="submit" name="addProduct" value="Add" />
+      <input type="submit" name="delProduct" value="Delete" />
+    </form>
+    </br>
+    <!-- other add/deletes here -->
+    <form action="producer.php" method="post">
+      <input type="submit" name="getSupplier" value="Check Supplier List" />
+      </br>
+      <?php
+      if (isset($_POST['getSupplier'])) {
+        $myfile = fopen('supplier.txt', 'r');
+        while (!feof($myfile)) {
+          $data = fgets($myfile);
+          echo ($data . "</br>");
+        }
+        fclose($myfile);
+        unset($_POST['getSupplier']);
+      }
+      ?>
+    </form>
+    </br>
+    <form action="producer.php" method="post">
+      <input type="submit" name="getCustomer" value="Check Customer List" />
+      </br>
+      <?php
+      if (isset($_POST['getCustomer'])) {
+        $myfile = fopen('customer.txt', 'r');
+        while (!feof($myfile)) {
+          $data = fgets($myfile);
+          echo ($data . "</br>");
+        }
+        fclose($myfile);
+        unset($_POST['getCustomer']);
+      }
+      ?>
+    </form>
+    </br>
+    <form action="producer.php" method="post">
+      <input type="submit" name="getMaterial" value="Check Material List" />
+      </br>
+      <?php
+      if (isset($_POST['getMaterial'])) {
+        $myfile = fopen('material.txt', 'r');
+        while (!feof($myfile)) {
+          $data = fgets($myfile);
+          echo ($data . "</br>");
+        }
+        fclose($myfile);
+        unset($_POST['getMaterial']);
+      }
+      ?>
+    </form>
+    </br>
+    <form action="producer.php" method="post">
+      <input type="submit" name="getEmployee" value="Check Emploee List" />
+      </br>
+      <?php
+      if (isset($_POST['getEmployee'])) {
+        $myfile = fopen('employee.txt', 'r');
+        while (!feof($myfile)) {
+          $data = fgets($myfile);
+          echo ($data . "</br>");
+        }
+        fclose($myfile);
+        unset($_POST['getEmployee']);
+      }
+      ?>
+    </form>
+    </br>
+    <form action="producer.php" method="post">
+      <input type="submit" name="getProduct" value="Check Product List" />
+      </br>
+      <?php
+      if (isset($_POST['getProduct'])) {
+        $myfile = fopen('product.txt', 'r');
+        while (!feof($myfile)) {
+          $data = fgets($myfile);
+          echo ($data . "</br>");
+        }
+        fclose($myfile);
+        unset($_POST['getProduct']);
+      }
+      ?>
+    </form>
+
+
+
+  </center>
+
+
+</body>
+
+</html>
+
+
+----------------------register.html...............
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register</title>
+  </head>
+  <body>
+    <fieldset>
+      <a href="index.html">Home</a> | <a href="about.html">About</a> |
+      <a href="register.html">Sign Up</a> | <a href="login.html">Login</a>
+    </fieldset>
+    <center>
+      <form action="register.php" method="post">
+        <h1>Registration</h1>
+        <table>
+          <tr>
+            <td>Register as:</td>
+            <td>
+              <select name="type">
+                <option value="producer" default>Producer</option>
+                <option value="supplier">Supplier</option>
+                <option value="customer">Customer</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td>Name:</td>
+            <td><input type="text" name="name" value="" required /></td>
+          </tr>
+          <tr>
+            <td>Username:</td>
+            <td><input type="text" name="username" value="" required /></td>
+          </tr>
+          <tr>
+            <td>Password:</td>
+            <td>
+              <input type="password" name="password" value="" required />
+            </td>
+          </tr>
+          <tr>
+            <td>Confirm Password:</td>
+            <td>
+              <input type="password" name="confirmPassword" value="" required />
+            </td>
+          </tr>
+          <tr>
+            <td>Email:</td>
+            <td><input type="email" required name="email" value="" /></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td><input type="submit" name="submit" value="Sing up" /></td>
+          </tr>
+        </table>
+      </form>
+    </center>
+  </body>
+</html>
+
+
+------------------------register.php----------------------------------
+
+<?php
+
+if (isset($_POST['submit'])) {
+    $type = $_POST['type'];
+    if ($type == "producer") {
+        $name = $_POST['name'];
+        $username = $_POST['username'];
+        $pass = $_POST['password'];
+        $cpass = $_POST['confirmPassword'];
+        $email = $_POST['email'];
+        if ($pass != $cpass) {
+            die("Wrong password");
+        } else {
+            $myfile = fopen('user.txt', 'a');
+            $user = $_POST['username'] . "|" . $_POST['password'] . "|" . $_POST['email'] . "|" . $_POST['name'] . "\r\n";
+
+            fwrite($myfile, $user);
+            fclose($myfile);
+
+            header('location: login.html');
+        }
+    } else {
+        die("Invalid Type! No user found");
+    }
+}
