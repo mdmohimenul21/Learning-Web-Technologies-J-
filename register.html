@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login</title>
+    <title>Register</title>
   </head>
   <body>
     <fieldset>
@@ -12,11 +12,11 @@
       <a href="register.html">Sign Up</a> | <a href="login.html">Login</a>
     </fieldset>
     <center>
-      <legend><h1>SCM-Login</h1></legend>
-      <form action="login.php" method="post">
+      <form action="register.php" method="post">
+        <h1>Registration</h1>
         <table>
           <tr>
-            <td>Login as:</td>
+            <td>Register as:</td>
             <td>
               <select name="type">
                 <option value="producer" default>Producer</option>
@@ -26,16 +26,32 @@
             </td>
           </tr>
           <tr>
+            <td>Name:</td>
+            <td><input type="text" name="name" value="" required /></td>
+          </tr>
+          <tr>
             <td>Username:</td>
-            <td><input type="text" required name="username" value="" /></td>
+            <td><input type="text" name="username" value="" required /></td>
           </tr>
           <tr>
             <td>Password:</td>
-            <td><input type="password" required name="password" value="" /></td>
+            <td>
+              <input type="password" name="password" value="" required />
+            </td>
+          </tr>
+          <tr>
+            <td>Confirm Password:</td>
+            <td>
+              <input type="password" name="confirmPassword" value="" required />
+            </td>
+          </tr>
+          <tr>
+            <td>Email:</td>
+            <td><input type="email" required name="email" value="" /></td>
           </tr>
           <tr>
             <td></td>
-            <td><input type="submit" name="submit" value="Login" /></td>
+            <td><input type="submit" name="submit" value="Sing up" /></td>
           </tr>
         </table>
       </form>
