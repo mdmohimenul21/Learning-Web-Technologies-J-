@@ -1,0 +1,491 @@
+-------------------------MySql------------------------------
+
+CREATE TABLE `crud` (
+  `id` int(11) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `phone` varchar(100) NOT NULL,
+  `city` varchar(100) NOT NULL,
+  `password` varchar(12) NOT NULL
+) 
+
+
+-------------------------------database.php-----------------------------
+
+
+<?php
+	$servername = "localhost";
+	$username = "root";
+	$password = "";
+	$db="school";
+	/*Create connection*/
+	$conn = mysqli_connect($servername, $username, $password,$db);
+
+
+-----------------------------------------index.php----------------------------------<?php
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Supply Chain Management</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+
+<body>
+    <div style="margin: auto;width: 60%;">
+        <div class="alert alert-success alert-dismissible" id="success" style="display:none;">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
+        </div>
+        <div class="alert alert-danger alert-dismissible" id="error" style="display:none;">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
+        </div>
+        <button type="button" class="btn btn-success btn-sm" id="register">Register</button> <button type="button" class="btn btn-success btn-sm" id="login">Login</button>
+
+        <form id="register_form" name="form1" method="post">
+            <div class="form-group">
+                <label for="email">Name:</label>
+                <input type="text" class="form-control" id="name" placeholder="Name" name="name">
+            </div>
+            <div class="form-group">
+                <label for="pwd">Email:</label>
+                <input type="email" class="form-control" id="email" placeholder="Email" name="email">
+            </div>
+            <div class="form-group">
+                <label for="pwd">Phone:</label>
+                <input type="text" class="form-control" id="phone" placeholder="Phone" name="phone">
+            </div>
+            <div class="form-group">
+                <label for="pwd">City:</label>
+                <select name="city" id="city" class="form-control">
+                    <option value="">Select</option>
+                    <option value="Dhaka">Dhaka</option>
+                    <option value="Barisal">Barisal</option>
+                    <option value="Chottogram">Chottogram</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="pwd">Password:</label>
+                <input type="password" class="form-control" id="password" placeholder="Password" name="password">
+            </div>
+            <input type="button" name="save" class="btn btn-primary" value="Register" id="butsave">
+        </form>
+        <form id="login_form" name="form1" method="post" style="display:none;">
+
+            <div class="form-group">
+                <label for="pwd">Email:</label>
+                <input type="email" class="form-control" id="email_log" placeholder="Email" name="email">
+            </div>
+            <div class="form-group">
+                <label for="pwd">Password:</label>
+                <input type="password" class="form-control" id="password_log" placeholder="Password" name="password">
+            </div>
+            <input type="button" name="save" class="btn btn-primary" value="Login" id="butlogin">
+        </form>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $('#login').on('click', function() {
+                $("#login_form").show();
+                $("#register_form").hide();
+            });
+            $('#register').on('click', function() {
+                $("#register_form").show();
+                $("#login_form").hide();
+            });
+            $('#butsave').on('click', function() {
+                $("#butsave").attr("disabled", "disabled");
+                var name = $('#name').val();
+                var email = $('#email').val();
+                var phone = $('#phone').val();
+                var city = $('#city').val();
+                var password = $('#password').val();
+                if (name != "" && email != "" && phone != "" && password != "") {
+                    $.ajax({
+                        url: "save.php",
+                        type: "POST",
+                        data: {
+                            type: 1,
+                            name: name,
+                            email: email,
+                            phone: phone,
+                            city: city,
+                            password: password
+                        },
+                        cache: false,
+                        success: function(dataResult) {
+                            var dataResult = JSON.parse(dataResult);
+                            if (dataResult.statusCode == 200) {
+                                $("#butsave").removeAttr("disabled");
+                                $('#register_form').find('input:text').val('');
+                                $("#success").show();
+                                $('#success').html('Registration successful !');
+                            } else if (dataResult.statusCode == 201) {
+                                $("#error").show();
+                                $('#error').html('Email ID already exists !');
+                            }
+
+                        }
+                    });
+                } else {
+                    alert('Please fill all the field !');
+                }
+            });
+            $('#butlogin').on('click', function() {
+                var email = $('#email_log').val();
+                var password = $('#password_log').val();
+                if (email != "" && password != "") {
+                    $.ajax({
+                        url: "save.php",
+                        type: "POST",
+                        data: {
+                            type: 2,
+                            email: email,
+                            password: password
+                        },
+                        cache: false,
+                        success: function(dataResult) {
+                            var dataResult = JSON.parse(dataResult);
+                            if (dataResult.statusCode == 200) {
+                                location.href = "welcome.php";
+                            } else if (dataResult.statusCode == 201) {
+                                $("#error").show();
+                                $('#error').html('Invalid EmailId or Password !');
+                            }
+
+                        }
+                    });
+                } else {
+                    alert('Please fill all the field !');
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
+
+
+
+--------------------------------------logout.php.--------------------------------------------------
+
+
+<?php
+session_start();
+unset($_SESSION["email"]);
+unset($_SESSION["password"]);
+header("Location:login.php");
+
+
+
+------------------------------------------save.php------------------
+
+<?php
+include 'database.php';
+session_start();
+if ($_POST['type'] == 1) {
+	$name = $_POST['name'];
+	$email = $_POST['email'];
+	$phone = $_POST['phone'];
+	$city = $_POST['city'];
+	$password = $_POST['password'];
+
+	$duplicate = mysqli_query($conn, "select * from crud where email='$email'");
+	if (mysqli_num_rows($duplicate) > 0) {
+		echo json_encode(array("statusCode" => 201));
+	} else {
+		$sql = "INSERT INTO `crud`( `name`, `email`, `phone`, `city`, `password`) 
+			VALUES ('$name','$email','$phone','$city', '$password')";
+		if (mysqli_query($conn, $sql)) {
+			echo json_encode(array("statusCode" => 200));
+		} else {
+			echo json_encode(array("statusCode" => 201));
+		}
+	}
+	mysqli_close($conn);
+}
+if ($_POST['type'] == 2) {
+	$email = $_POST['email'];
+	$password = $_POST['password'];
+	$check = mysqli_query($conn, "select * from crud where email='$email' and password='$password'");
+	if (mysqli_num_rows($check) > 0) {
+		$_SESSION['email'] = $email;
+		echo json_encode(array("statusCode" => 200));
+	} else {
+		echo json_encode(array("statusCode" => 201));
+	}
+	mysqli_close($conn);
+}
+
+
+---------------------------producer.php----------------------
+
+<?php
+session_start();
+if ($_SESSION['type'] != "producer" || !isset($_SESSION['user'])) {
+    header('location: login.html');
+}
+if (isset($_POST['addSupplier'])) {
+    $myfile = fopen('supplier.txt', 'a');
+    $user = $_POST['supplier'] . "\r\n";
+    fwrite($myfile, $user);
+    fclose($myfile);
+    unset($_POST['addSupplier']);
+}
+if (isset($_POST['delSupplier'])) {
+    $myfile = fopen('supplier.txt', 'r');
+    $out = array();
+    while (!feof($myfile)) {
+        $data = fgets($myfile);
+        if (trim($data) != $_POST['supplier']) {
+            $out[] = $data;
+        }
+    }
+    $fp = fopen("supplier.txt", "w+");
+    flock($fp, LOCK_EX);
+    foreach ($out as $line) {
+        fwrite($fp, $line);
+    }
+    flock($fp, LOCK_UN);
+    fclose($fp);
+    unset($_POST['delSupplier']);
+}
+if (isset($_POST['addCustomer'])) {
+    $myfile = fopen('customer.txt', 'a');
+    $user = $_POST['customer'] . "\r\n";
+    fwrite($myfile, $user);
+    fclose($myfile);
+    unset($_POST['addCustomer']);
+}
+if (isset($_POST['delCustomer'])) {
+    $myfile = fopen('customer.txt', 'r');
+    $out = array();
+    while (!feof($myfile)) {
+        $data = fgets($myfile);
+        if (trim($data) != $_POST['customer']) {
+            $out[] = $data;
+        }
+    }
+    $fp = fopen("customer.txt", "w+");
+    flock($fp, LOCK_EX);
+    foreach ($out as $line) {
+        fwrite($fp, $line);
+    }
+    flock($fp, LOCK_UN);
+    fclose($fp);
+    unset($_POST['delCustomer']);
+}
+if (isset($_POST['addMaterial'])) {
+    $myfile = fopen('material.txt', 'a');
+    $user = $_POST['material'] . "\r\n";
+    fwrite($myfile, $user);
+    fclose($myfile);
+    unset($_POST['addMaterial']);
+}
+if (isset($_POST['delMaterial'])) {
+    $myfile = fopen('material.txt', 'r');
+    $out = array();
+    while (!feof($myfile)) {
+        $data = fgets($myfile);
+        if (trim($data) != $_POST['material']) {
+            $out[] = $data;
+        }
+    }
+    $fp = fopen("material.txt", "w+");
+    flock($fp, LOCK_EX);
+    foreach ($out as $line) {
+        fwrite($fp, $line);
+    }
+    flock($fp, LOCK_UN);
+    fclose($fp);
+    unset($_POST['delMaterial']);
+}
+if (isset($_POST['addEmployee'])) {
+    $myfile = fopen('employee.txt', 'a');
+    $user = $_POST['employee'] . "\r\n";
+    fwrite($myfile, $user);
+    fclose($myfile);
+    unset($_POST['addEmployee']);
+}
+if (isset($_POST['delEmploee'])) {
+    $myfile = fopen('employee.txt', 'r');
+    $out = array();
+    while (!feof($myfile)) {
+        $data = fgets($myfile);
+        if (trim($data) != $_POST['employee']) {
+            $out[] = $data;
+        }
+    }
+    $fp = fopen("employee.txt", "w+");
+    flock($fp, LOCK_EX);
+    foreach ($out as $line) {
+        fwrite($fp, $line);
+    }
+    flock($fp, LOCK_UN);
+    fclose($fp);
+    unset($_POST['delEmployee']);
+}
+
+if (isset($_POST['addProduct'])) {
+    $myfile = fopen('product.txt', 'a');
+    $user = $_POST['product'] . "\r\n";
+    fwrite($myfile, $user);
+    fclose($myfile);
+    unset($_POST['addProduct']);
+}
+if (isset($_POST['delProduct'])) {
+    $myfile = fopen('product.txt', 'r');
+    $out = array();
+    while (!feof($myfile)) {
+        $data = fgets($myfile);
+        if (trim($data) != $_POST['product']) {
+            $out[] = $data;
+        }
+    }
+    $fp = fopen("product.txt", "w+");
+    flock($fp, LOCK_EX);
+    foreach ($out as $line) {
+        fwrite($fp, $line);
+    }
+    flock($fp, LOCK_UN);
+    fclose($fp);
+    unset($_POST['delProduct']);
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Producer</title>
+</head>
+
+<body>
+    <fieldset>
+        <a href="index.html">Home</a> | <a href="about.html">About</a> | <a href="logout.php">Logout</a>
+    </fieldset>
+    <center>
+        <h1>Producer</h1>
+        <form action="producer.php" method="post">
+            <input type="text" name="supplier" placeholder="Supplier to add/delete" />
+            <input type="submit" name="addSupplier" value="Add" />
+            <input type="submit" name="delSupplier" value="Delete" />
+        </form>
+        </br>
+        <form action="producer.php" method="POST">
+            <input type="text" name="customer" placeholder="Customer Request to add/delete" />
+            <input type="submit" name="addCustomer" value="Add" />
+            <input type="submit" name="delCustomer" value="Delete" />
+        </form>
+        </br>
+        <form action="producer.php" method="POST">
+            <input type="text" name="material" placeholder="Material Request to add/delete" />
+            <input type="submit" name="addMaterial" value="Add" />
+            <input type="submit" name="delMaterial" value="Delete" />
+        </form>
+        </br>
+        <form action="producer.php" method="POST">
+            <input type="text" name="employee" placeholder="Employee Request to add/delete" />
+            <input type="submit" name="addEmployee" value="Add" />
+            <input type="submit" name="delEmployrr" value="Delete" />
+        </form>
+        </br>
+        <form action="producer.php" method="POST">
+            <input type="text" name="product" placeholder="Product Request to add/delete" />
+            <input type="submit" name="addProduct" value="Add" />
+            <input type="submit" name="delProduct" value="Delete" />
+        </form>
+        </br>
+        <!-- other add/deletes here -->
+        <form action="producer.php" method="post">
+            <input type="submit" name="getSupplier" value="Check Supplier List" />
+            </br>
+            <?php
+            if (isset($_POST['getSupplier'])) {
+                $myfile = fopen('supplier.txt', 'r');
+                while (!feof($myfile)) {
+                    $data = fgets($myfile);
+                    echo ($data . "</br>");
+                }
+                fclose($myfile);
+                unset($_POST['getSupplier']);
+            }
+            ?>
+        </form>
+        </br>
+        <form action="producer.php" method="post">
+            <input type="submit" name="getCustomer" value="Check Customer List" />
+            </br>
+            <?php
+            if (isset($_POST['getCustomer'])) {
+                $myfile = fopen('customer.txt', 'r');
+                while (!feof($myfile)) {
+                    $data = fgets($myfile);
+                    echo ($data . "</br>");
+                }
+                fclose($myfile);
+                unset($_POST['getCustomer']);
+            }
+            ?>
+        </form>
+        </br>
+        <form action="producer.php" method="post">
+            <input type="submit" name="getMaterial" value="Check Material List" />
+            </br>
+            <?php
+            if (isset($_POST['getMaterial'])) {
+                $myfile = fopen('material.txt', 'r');
+                while (!feof($myfile)) {
+                    $data = fgets($myfile);
+                    echo ($data . "</br>");
+                }
+                fclose($myfile);
+                unset($_POST['getMaterial']);
+            }
+            ?>
+        </form>
+        </br>
+        <form action="producer.php" method="post">
+            <input type="submit" name="getEmployee" value="Check Emploee List" />
+            </br>
+            <?php
+            if (isset($_POST['getEmployee'])) {
+                $myfile = fopen('employee.txt', 'r');
+                while (!feof($myfile)) {
+                    $data = fgets($myfile);
+                    echo ($data . "</br>");
+                }
+                fclose($myfile);
+                unset($_POST['getEmployee']);
+            }
+            ?>
+        </form>
+        </br>
+        <form action="producer.php" method="post">
+            <input type="submit" name="getProduct" value="Check Product List" />
+            </br>
+            <?php
+            if (isset($_POST['getProduct'])) {
+                $myfile = fopen('product.txt', 'r');
+                while (!feof($myfile)) {
+                    $data = fgets($myfile);
+                    echo ($data . "</br>");
+                }
+                fclose($myfile);
+                unset($_POST['getProduct']);
+            }
+            ?>
+        </form>
+
+
+
+    </center>
+
+
+</body>
+
+</html>
